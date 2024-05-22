@@ -1,13 +1,38 @@
+import "dotenv/config";
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
 import { ApolloServer } from "@apollo/server"
-import { startStandaloneServer } from "@apollo/server/standalone"
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
 import mergedTypeDefs from "./typeDefs/index.js"
 import mergedResolvers from "./resolvers/index.js"
+
+const PORT = process.env.PORT;
+const app = express();
+
+const httpServer = http.createServer(app);
 
 const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
-})
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+});
 
-const { url } = await startStandaloneServer(server)
+await server.start();
 
+app.use(
+  '/',
+  cors(),
+  express.json(),
+  expressMiddleware(server, {
+    context: async ({ req }) => ({ token: req.headers.token }),
+  }),
+);
+
+// Modified server startup
+await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
+
+const url = `http://localhost:${PORT}/`
 console.log(`🚀🚀🚀 Server ready at ${url}`)
