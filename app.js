@@ -1,7 +1,8 @@
-import "dotenv/config";
+import dotenv from 'dotenv'
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import { connectDB } from './database/connectDB.js';
 import { ApolloServer } from "@apollo/server"
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -9,6 +10,7 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import mergedTypeDefs from "./typeDefs/index.js"
 import mergedResolvers from "./resolvers/index.js"
 
+dotenv.config();
 const PORT = process.env.PORT;
 const app = express();
 
@@ -36,3 +38,4 @@ await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
 
 const url = `http://localhost:${PORT}/`
 console.log(`🚀🚀🚀 Server ready at ${url}`)
+await connectDB()

@@ -1,0 +1,28 @@
+import mongoose from "mongoose";
+
+const User = mongoose.Schema({
+  userName: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  profilePicture: {
+    type: String,
+    default: ""
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    required: true,
+  }
+}, { timestamps: true })
+
+export default mongoose.model("User", User)
