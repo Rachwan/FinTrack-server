@@ -1,4 +1,4 @@
-const users = [
+export const users = [
   {
     _id: "1",
     username: "user1",
@@ -42,7 +42,7 @@ const users = [
 ];
 
 
-const transactions = [
+export const transactions = [
   {
     _id: "1",
     userId: "1",
@@ -94,5 +94,3 @@ const transactions = [
     date: "2024-01-05",
   },
 ];
-
-export default { users, transactions }
