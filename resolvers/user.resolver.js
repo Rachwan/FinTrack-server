@@ -1,6 +1,6 @@
 import { users } from '../data/data.js'
 import User from '../models/user.model.js'
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 const userResolver = {
   Query: {
     users: async () => {
@@ -22,7 +22,7 @@ const userResolver = {
         throw new Error("Error getting the user!")
       }
     },
-    authUser: async (_, _, context) => {
+    authUser: async (_, __, context) => {
       try {
         const user = context.getUser();
         return user
@@ -60,7 +60,7 @@ const userResolver = {
         throw new Error("Error while signup!")
       }
     },
-    logIn: async (_, { input }, context) => {
+    login: async (_, { input }, context) => {
       try {
         const { userName, password } = input;
         const { user } = await context.authenticate("graphql-local", { userName, password })
@@ -71,7 +71,7 @@ const userResolver = {
         throw new Error("Error while login!")
       }
     },
-    logOut: async (_, _, context) => {
+    logout: async (_, __, context) => {
       try {
         await context.logout();
         req.session.destroy((err) => {
