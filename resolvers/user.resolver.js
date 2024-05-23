@@ -38,16 +38,14 @@ const userResolver = {
         const { userName, name, password, gender } = input;
 
         if (!userName || !name || !password || !gender)
-          throw new Error("All fields are required!");
+          return new Error("All fields are required!");
 
         const user = await User.findOne({ userName });
 
-        if (user) throw new Error("Username already exist!");
+        if (user) return new Error("Username already exist!");
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-
-        console.log(hashedPassword);
 
         const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${userName}`;
         const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${userName}`;
@@ -70,6 +68,9 @@ const userResolver = {
     login: async (_, { input }, context) => {
       try {
         const { userName, password } = input;
+        console.log("🚀 ~ login: ~ userName:", userName);
+        console.log("🚀 ~ login: ~ password:", password);
+        if (!userName || !password) return new Error("All fields are required");
         const { user } = await context.authenticate("graphql-local", {
           userName,
           password,
@@ -78,7 +79,7 @@ const userResolver = {
         return user;
       } catch (error) {
         console.error("Error: ", error.message);
-        throw new Error("Error while login!");
+        throw new Error("Error while trying to login!");
       }
     },
     logout: async (_, __, context) => {
@@ -91,7 +92,7 @@ const userResolver = {
         return { message: "Logout Successfully" };
       } catch (error) {
         console.error("Error: ", error.message);
-        return { message: "Error while logout!" };
+        return { message: "Error while logout" };
       }
     },
   },

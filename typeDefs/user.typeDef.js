@@ -29,13 +29,12 @@ export const userDefs = `#graphql
     gender: String!
   }
 
-  input LogInInput {
-    name: String!
-    password: String!
-  }
+input LogInInput {
+  userName: String!
+  password: String!
+}
 
   type LogoutResponse {
     message: String!
   }
-
-`
+`;
