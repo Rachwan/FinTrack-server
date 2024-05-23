@@ -84,14 +84,14 @@ const userResolver = {
     logout: async (_, __, context) => {
       try {
         await context.logout();
-        req.session.destroy((err) => {
+        context.req.session.destroy((err) => {
           if (err) throw new Error("Error: ", err.message);
         });
-        res.clearCookie("connect.sid");
+        context.res.clearCookie("connect.sid");
         return { message: "Logout Successfully" };
       } catch (error) {
         console.error("Error: ", error.message);
-        throw new Error("Error while logout!");
+        return { message: "Error while logout!" };
       }
     },
   },
