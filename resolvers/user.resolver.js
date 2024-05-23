@@ -1,34 +1,34 @@
-import { users } from '../data/data.js'
-import User from '../models/user.model.js'
-import bcrypt from 'bcryptjs';
+import { users } from "../data/data.js";
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 const userResolver = {
   Query: {
     users: async () => {
       try {
-        const users = await User.find({})
-        return users
+        const users = await User.find({});
+        return users;
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error getting users!")
+        console.error("Error: ", error.message);
+        throw new Error("Error getting users!");
       }
     },
     user: async (_, { userId }) => {
       try {
-        const user = await User.findById(userId)
-        if (!user) throw new Error("User not found!")
+        const user = await User.findById(userId);
+        if (!user) throw new Error("User not found!");
         return user;
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error getting the user!")
+        console.error("Error: ", error.message);
+        throw new Error("Error getting the user!");
       }
     },
     authUser: async (_, __, context) => {
       try {
         const user = context.getUser();
-        return user
+        return user;
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error getting the auth user!")
+        console.error("Error: ", error.message);
+        throw new Error("Error getting the auth user!");
       }
     },
   },
@@ -36,12 +36,18 @@ const userResolver = {
     signUp: async (_, { input }, context) => {
       try {
         const { userName, name, password, gender } = input;
-        if (!userName || !name || !password || !gender) throw new Error("All fields are required!");
-        const user = await User.find({ userName })
+
+        if (!userName || !name || !password || !gender)
+          throw new Error("All fields are required!");
+
+        const user = await User.findOne({ userName });
+
         if (user) throw new Error("Username already exist!");
 
-        const salt = bcrypt.genSalt(10);
-        const hashedPassword = bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        console.log(hashedPassword);
 
         const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${userName}`;
         const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${userName}`;
@@ -50,41 +56,45 @@ const userResolver = {
           userName,
           name,
           password: hashedPassword,
-          profilePicture: gender === "male" ? boyProfilePic : girlProfilePic
-        })
+          profilePicture: gender === "male" ? boyProfilePic : girlProfilePic,
+          gender: gender,
+        });
 
         await newUser.save();
-        await context.login(newUser)
+        await context.login(newUser);
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error while signup!")
+        console.error("Error: ", error.message);
+        throw new Error("Error while signup!");
       }
     },
     login: async (_, { input }, context) => {
       try {
         const { userName, password } = input;
-        const { user } = await context.authenticate("graphql-local", { userName, password })
-        await context.login(user)
-        return user
+        const { user } = await context.authenticate("graphql-local", {
+          userName,
+          password,
+        });
+        await context.login(user);
+        return user;
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error while login!")
+        console.error("Error: ", error.message);
+        throw new Error("Error while login!");
       }
     },
     logout: async (_, __, context) => {
       try {
         await context.logout();
         req.session.destroy((err) => {
-          if (err) throw new Error("Error: ", err.message)
-        })
-        res.clearCookie("connect.sid")
-        return { message: "Logout Successfully" }
+          if (err) throw new Error("Error: ", err.message);
+        });
+        res.clearCookie("connect.sid");
+        return { message: "Logout Successfully" };
       } catch (error) {
-        console.error("Error: ", error.message)
-        throw new Error("Error while logout!")
+        console.error("Error: ", error.message);
+        throw new Error("Error while logout!");
       }
-    }
-  }
-}
+    },
+  },
+};
 
-export default userResolver
+export default userResolver;
