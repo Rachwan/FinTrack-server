@@ -1,5 +1,5 @@
-import { transactions } from '../data/data.js'
-import Transaction from '../models/transaction.model.js'
+import { transactions } from "../data/data.js"
+import Transaction from "../models/transaction.model.js"
 const transactionResolver = {
   Query: {
     transactions: async (_, __, context) => {
@@ -28,8 +28,12 @@ const transactionResolver = {
   Mutation: {
     createTransaction: async (_, { input }, context) => {
       try {
-        const newTransaction = new Transaction({ ...input, userId: context.getUer()._id })
+        const newTransaction = new Transaction({
+          ...input,
+          userId: context.getUser()._id,
+        });
         await newTransaction.save();
+        return newTransaction;
       } catch (error) {
         console.error("Error: ", error.message)
         throw new Error("Error creating the transaction!")
@@ -37,7 +41,10 @@ const transactionResolver = {
     },
     updateTransaction: async (_, { input }) => {
       try {
-        const updatedTransaction = await Transaction.findByIdAndUpdate(input.transactionId, { ...input })
+        const updatedTransaction = await Transaction.findByIdAndUpdate(
+          input.transactionId,
+          { ...input }
+        );
         return updatedTransaction
       } catch (error) {
         console.error("Error: ", error.message)
