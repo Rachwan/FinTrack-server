@@ -7,6 +7,7 @@ export const userDefs = `#graphql
     password: String!
     profilePicture: String!
     gender: String!
+    transactions: [Transaction!]!
   }
 
   # Query And Mutation

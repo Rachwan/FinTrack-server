@@ -1,4 +1,4 @@
-import { users } from "../data/data.js";
+import Transaction from "../models/transaction.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 const userResolver = {
@@ -93,6 +93,18 @@ const userResolver = {
       } catch (error) {
         console.error("Error: ", error.message);
         return { message: "Error while logout" };
+      }
+    },
+  },
+  User: {
+    transactions: async (parent) => {
+      try {
+        const userId = parent._id;
+        const transactions = await Transaction.find({ userId });
+
+        return transactions;
+      } catch (error) {
+        console.error("Error: ", error.message);
       }
     },
   },
